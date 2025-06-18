@@ -21,32 +21,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     placeholder: "*****",
                 },
             },
-            authorize:async(credentials)=>{
+            authorize: async (credentials) => {
 
                 await connectDB()
 
                 try {
                     const user = await User.findOne({ email: credentials.email })
 
-                    if(!user){
+                    if (!user) {
                         throw new Error("User not found")
                     }
 
-                    if(user.isVerified){
+                    if (!user.isVerified) {
                         throw new Error("Please verify your email")
                     }
 
-                    const isValid = await bcrypt.compare(credentials.password, user.password)
+                    const isValid = await bcrypt.compare(
+                        String(credentials.password),
+                        String(user.password)
+                    )
 
                     if (isValid) {
                         return user
                     }
-                    else{
+                    else {
                         throw new Error("Invalid password")
                     }
 
-                } catch (error:any) {
-                    throw new Error("SignIn Error",error)
+                } catch (error: any) {
+                    throw new Error(error.message || "SignIn Error")
                 }
             }
         })
