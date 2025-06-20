@@ -1,7 +1,7 @@
 // Update the import path if the db file is not in src/lib/db.ts
 import connectDB from "../../../../lib/db";
 import User from "../../../models/user.model";
-// import sendVerificationEmail from "@/lib/sendverificationemail.ts";
+import { sendVerificationEmail } from "../../../../helpers/sendverficationemail";
 import { NextResponse } from "next/server";
 import { SignUpSchema } from "../../../../schemas/signUpSchema"
 
@@ -74,6 +74,7 @@ export async function POST(request:Request) {
                 username: username,
                 password: password,
                 isVerified: false,
+                verifyCode: verifyCode,
                 verifyCodeExpires: expirationDate,
                 isAcceptingMessages: true,
                 messages: []
@@ -81,20 +82,23 @@ export async function POST(request:Request) {
 
             await newUser.save();
 
-            // const emailResponse = await sendVerificationEmail(email, verifyCode);
+            const emailResponse = await sendVerificationEmail(email.toString(), newUser.username.toString(),verifyCode.toString());
 
-            // if (!emailResponse.success) {
-            //     return new NextResponse.json({
-            //         message: "Failed to send verification email",
-            //         success: false
-            //     }, { 
-            //         status: 500 
-            //     });
-            // }
+            if (!emailResponse || !emailResponse.success) {
+                console.log(emailResponse);
+                
+                return NextResponse.json({
+                    message: "Failed to send verification email",
+                    success: false
+                }, { 
+                    status: 500 
+                });
+            }
 
             return  NextResponse.json({
                 message: "User created successfully, verification email sent",
-                success: true
+                success: true,
+                Email:emailResponse
             }, {
                 status: 201
             });

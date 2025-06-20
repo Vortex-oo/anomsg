@@ -33,7 +33,7 @@ const userSchema = new Schema<IUser>({
     },
     verifyCode:{
         type:String,
-        // required:[true, "Verification code is required"],
+        required:[true, "Verification code is required"],
     },
     verifyCodeExpires:{
         type:Date,
