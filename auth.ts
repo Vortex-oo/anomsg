@@ -1,89 +1,77 @@
-import NextAuth from "next-auth"
-import Credentials from "next-auth/providers/credentials"
-import connectDB from "./lib/db"
-import User from "@/models/user.model"
-import bcrypt from "bcryptjs"
-import { SignUpSchema } from "./schemas/signUpSchema"
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 
+import connectDB from "./lib/db";
+import User from "@/models/user.model";
+import { SignUpSchema } from "./schemas/signUpSchema";
 
-
-export const { handlers, signIn, signOut, auth } = NextAuth({
+// Define your auth options
+export const authOptions: NextAuthOptions = {
     providers: [
-        Credentials({
+        CredentialsProvider({
+            name: "Credentials",
             credentials: {
-                email: {
-                    type: "email",
-                    label: "Email",
-                },
-                password: {
-                    type: "password",
-                    label: "Password",
-                },
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" }
             },
             authorize: async (credentials) => {
-
-                await connectDB()
+                await connectDB();
 
                 try {
+                    const { email, password } = await SignUpSchema.parseAsync(credentials);
+                    const user = await User.findOne({ email });
 
-                    const { email, password } = await SignUpSchema.parseAsync(credentials)
-                    const user = await User.findOne({ email: email })
+                    if (!user) throw new Error("User not found");
+                    if (!user.isVerified) throw new Error("Please verify your email");
 
-                    if (!user) {
-                        throw new Error("User not found")
-                    }
+                    const isPasswordValid = await bcrypt.compare(password, user.password);
+                    if (!isPasswordValid) throw new Error("Invalid password");
 
-                    if (!user.isVerified) {
-                        throw new Error("Please verify your email")
-                    }
-
-                    const isValid = await bcrypt.compare(
-                        String(password),
-                        String(user.password)
-                    )
-
-                    if (isValid) {
-                        return user
-                    }
-                    else {
-                        throw new Error("Invalid password")
-                    }
-
+                    return user; // Will be stored in JWT
                 } catch (error: any) {
-                    throw new Error(error.message || "SignIn Error")
+                    throw new Error(error.message || "Sign in error");
                 }
             }
         })
     ],
 
     pages: {
-        signIn: '/signin',
-        error: '/auth/error',
-        verifyRequest: '/auth/verify',
+        signIn: "/signin",
+        error: "/auth/error",
+        verifyRequest: "/auth/verify"
     },
+
     callbacks: {
-        async session({ session, token }) {
-            if (session.user) {
-                session.user.id = String(token.id)
-                session.user.username = String(token.username)
-                session.user.isVerified = Boolean(token.isVerified)
-            }
-            return session
-        },
-        async jwt({ token, user }) {
+        async jwt({ token, user }: { token: any; user?: any }) {
             if (user) {
-                token.id = user._id
-                token.username = user.username
-                token.isVerified = user.isVerified
+                token.id = user._id;
+                token.username = user.username;
+                token.isVerified = user.isVerified;
             }
-            return token
+            return token;
         },
-        
+
+        async session({ session, token }: { session: any; token: any }) {
+            if (session.user) {
+                session.user.id = token.id as string;
+                session.user.username = token.username as string;
+                session.user.isVerified = token.isVerified as boolean;
+            }
+            return session;
+        }
     },
+
     session: {
         strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60, // 30 days
+        maxAge: 30 * 24 * 60 * 60 // 30 days
     },
+
     secret: process.env.AUTH_SECRET,
-    debug: process.env.NODE_ENV === "development",
-})
+    debug: process.env.NODE_ENV === "development"
+};
+
+// Export handlers and helper functions for Next.js App Router
+const { handlers, signIn, signOut, auth } = NextAuth(authOptions);
+
+export { handlers, signIn, signOut, auth };
