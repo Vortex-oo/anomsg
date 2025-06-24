@@ -2,6 +2,7 @@ import User from "@/models/user.model";
 import { auth } from "../../../../auth";
 import connectDB from "../../../../lib/db";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 
 export async function GET(req: Request) {
@@ -26,18 +27,25 @@ export async function GET(req: Request) {
         const userId = user.id;
 
         const userResult = await User.aggregate([
-            { $match: { id: userId } },
+            { $match: { id: new mongoose.Types.ObjectId(userId) } },
             { $unwind: "$messages" },
-            { $sort: { "message.createdAt": -1 } }
+            { $sort: { "message.createdAt": -1 } },
+            { $group:{_id:"$_id", messages:{$push:"$messages"}}}
         ])
 
-        if (!userResult) {
+        if (!userResult || userResult.length<=0) {
             return NextResponse.json({
                 message: "User Not Found",
                 success: false
             },
                 { status: 401 })
         }
+
+        return NextResponse.json({
+            messages:userResult[0].messages,
+            success:true
+        },{status:200})
+
     } catch (error) {
         return NextResponse.json({
             message: "Error in getting messages",
