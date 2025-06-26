@@ -39,6 +39,7 @@ export async function GET(request:Request){
         }
         return NextResponse.json({
             message: "Username is available",
+            success: true,
             result:result
         },{
             status:200

@@ -1,4 +1,4 @@
-import VerificationEmail from "../components/email";
+import VerificationEmail from "../components/components/ui/email";
 import { resend } from "../lib/resend";
 
 
