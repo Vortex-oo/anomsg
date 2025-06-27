@@ -81,7 +81,7 @@ const SignUP = () => {
                 return;
             }
             toast.success("Signup Successful. You have successfully signed up!", response.data.message);
-            router.replace(`/verify/${response.data.username}`)
+            router.replace(`/verify/${username}`)
         } catch (error) {
             const axiosError = error as AxiosError;
             console.error("Error during signup:", axiosError);
