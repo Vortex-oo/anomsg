@@ -80,7 +80,7 @@ const SignUP = () => {
                 return;
             }
             toast.success("Signup Successful. redirecting to the verify page", response.data.message);
-            router.replace(`/verify/${username}`)
+            router.replace(`/verify/${username}?flow=signup`)
         } catch (error) {
             const axiosError = error as AxiosError;
             console.error("Error during signup:", axiosError);

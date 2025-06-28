@@ -1,5 +1,5 @@
 "use client"
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -19,6 +19,10 @@ const VerifyCode = () => {
         resolver: zodResolver(VerifySchema)
     })
     const router = useRouter()
+    const searchParams = useSearchParams()
+
+
+    const from = searchParams.get("flow")
 
     const onSubmit = async (data: z.infer<typeof VerifySchema>) => {
         try {
@@ -29,8 +33,15 @@ const VerifyCode = () => {
             })
 
             if (response.data.success) {
-                toast.success("Verification successful! You can now log in.");
-                router.push('/login');
+
+                if (from == "reset") {
+                    toast.success("Verification successful, Redirecting to Reset Password Page")
+                    router.push("/resetpassword")
+                }
+                else {
+                    toast.success("Verification successful! You can now log in.");
+                    router.push('/signin');
+                }
             }
 
         } catch (error) {

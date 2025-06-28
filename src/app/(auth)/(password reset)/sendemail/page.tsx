@@ -27,7 +27,7 @@ const EmailSend = () => {
     const onSubmit = async (data: { email: string }) => {
         setIsSubmitting(true); // <-- Add this line
         try {
-            const response = await axios.post('/api/resetpassword', {
+            const response = await axios.post('/api/sendemails', {
                 email: data.email
             });
 
@@ -35,7 +35,7 @@ const EmailSend = () => {
 
             if (response.data.success) {
                 toast.success("Reset password email sent successfully, Redirecting to verify page");
-                router.push(`/verify/${response.data.username}`)
+                router.push(`/verify/${response.data.username}?flow=reset`)
             } else {
                 toast.error(response.data.message || "Failed to send reset password email.");
             }
