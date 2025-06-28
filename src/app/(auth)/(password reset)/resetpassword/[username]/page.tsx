@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -12,15 +12,17 @@ import { Button } from '@/components/ui/button'
 import { Loader } from 'lucide-react'
 
 
+export const passwordSchema = z.object({
+    password: z.string()
+        .min(8, { message: 'Password must be at least 8 characters long' })
+        .max(50, { message: 'Password must be at most 50 characters long' })
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, { message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character' }),
+})
+
 const page = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const router = useRouter()
-    const passwordSchema = z.object({
-        password: z.string()
-            .min(8, { message: 'Password must be at least 8 characters long' })
-            .max(50, { message: 'Password must be at most 50 characters long' })
-            .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, { message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character' }),
-    })
+    const params= useParams()
 
 
     const form = useForm<z.infer<typeof passwordSchema>>({
@@ -32,9 +34,10 @@ const page = () => {
 
     const onsubmit = async (data: z.infer<typeof passwordSchema>)=>{
         try {
-            
+            setIsSubmitting(true);
             const response = await axios.post('/api/resetpassword', {
-                password: data.password
+                password: data.password,
+                username: params.username // Assuming you have the username in the URL params
             });
 
             if (response.data.success) {
@@ -60,6 +63,10 @@ const page = () => {
                 toast.error("An error occurred while processing your request.");
             }
             
+        }
+        finally{
+            setIsSubmitting(false);
+            form.reset();
         }
     }
 

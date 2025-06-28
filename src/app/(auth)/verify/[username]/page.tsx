@@ -36,7 +36,7 @@ const VerifyCode = () => {
 
                 if (from == "reset") {
                     toast.success("Verification successful, Redirecting to Reset Password Page")
-                    router.push("/resetpassword")
+                    router.push(`/resetpassword/${params.username}`) // Redirect to reset password page
                 }
                 else {
                     toast.success("Verification successful! You can now log in.");
