@@ -126,6 +126,13 @@ const SignInPage = () => {
                 </FormItem>
               )}
             />
+            <div>
+              <p className="text-sm text-white">
+                <a href="/sendemail" className="text-orange-400 hover:underline ml-1">
+                  Forget Password?
+                </a>
+              </p>
+            </div>
 
             {/* 🔥 Submit Button */}
             <Button

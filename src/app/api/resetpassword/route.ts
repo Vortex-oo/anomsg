@@ -51,6 +51,11 @@ export async function POST(request: Request) {
             user.verifyCodeExpires = new Date(Date.now() + 3600000)
 
             await user.save();
+            return NextResponse.json({
+                message: "Reset password email sent successfully",
+                success: true,
+                username: user.username
+            }, { status: 200})
 
         } catch (error) {
             console.error("Error sending email:", error);
