@@ -91,7 +91,7 @@ const SignUP = () => {
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen  relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
             <div
                 className="absolute inset-0 bg-cover bg-center z-0"
                 style={{
@@ -99,7 +99,9 @@ const SignUP = () => {
                 }}
             ></div>
 
-            <div className="relative z-10 w-full max-w-md p-8 rounded-2xl shadow-xl border border-white backdrop-blur-xs ">
+            <div
+                className="relative z-10 w-full max-w-md mx-4 p-8 rounded-2xl border shadow-lg backdrop-blur-xs"
+            >
                 <h2 className="text-3xl font-bold text-center mb-7 tracking-wider text-orange-400">
                     Create Your Fiery Identity
                 </h2>

@@ -10,7 +10,6 @@ export const sendVerificationEmail = async (email: string, username: string, ver
             subject: 'Verification Code For ANOMSG',
             react: VerificationEmail({username, otp: verificationCode}),
         });
-        // Always return a success object
         return {
             success: true,
             message: "Verification email sent.",
