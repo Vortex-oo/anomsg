@@ -4,6 +4,7 @@ import Document, { Schema } from "mongoose";
 export interface IMessage extends Document {
     content: string;
     createdAt: Date;
+    _id: string;
 }
 
 const messageSchema = new Schema<IMessage>({
