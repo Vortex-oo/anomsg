@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             message: "Message acceptance updated",
-            updatedUser,
+            isAcceptingMessages: updatedUser.isAcceptingMessages,
             success: true
         }, {
             status: 200

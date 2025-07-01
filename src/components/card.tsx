@@ -23,9 +23,9 @@ import axios, { AxiosError } from "axios"
 
 type MessageCardProps = {
     message: IMessage;
-    onDeleteMessage: (messageId: string) => void;
+    callBack: (messageId: string) => void;
 }
-const CustomCard = ({ message, onDeleteMessage }: MessageCardProps) => {
+const CustomCard = ({ message, callBack }: MessageCardProps) => {
 
     const handleDeleteConfirm = async () => {
         try {
@@ -35,7 +35,7 @@ const CustomCard = ({ message, onDeleteMessage }: MessageCardProps) => {
             toast.success(
                 "title:",response.data.message ?? 'Message deleted successfully'
             );
-            onDeleteMessage(message._id);
+            callBack(message._id);
 
         } catch (error) {
             const axiosError = error as AxiosError;
