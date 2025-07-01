@@ -1,178 +1,209 @@
 "use client"
 
-import axios, { AxiosError } from 'axios'
-import React, { useCallback, useEffect, useState } from 'react'
-import { toast } from 'sonner'
-import { acceptMessageSchema } from '../../../schemas/acceptMessageSchema'
-import { IMessage } from '../../models/message.model'
-import { useForm } from 'react-hook-form'
+import React, { useEffect, useState } from 'react'
+import { z } from 'zod'
+import { SignUpSchema } from '../../../../schemas/signUpSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useSession } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
-import { Separator } from '@/components/ui/separator'
-import { Loader, RefreshCcw } from 'lucide-react'
-import CustomCard from '@/components/card'
+import { useForm } from 'react-hook-form'
+import { useDebounceCallback } from 'usehooks-ts'
+import { toast } from "sonner"
+import { useRouter } from 'next/navigation'
+import axios, { AxiosError } from 'axios'
+import { Button } from "@/components/ui/button"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 
-const Dashboard = () => {
-    const [isSwitchLoading, setIsSwitchLoading] = useState(false)
-    const [loading, setLoading] = useState(true)
-    const [message, setMessage] = useState<IMessage[]>([])
+const spinner = (
+    <svg className="animate-spin h-5 w-5 text-orange-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="#f97316" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="#f97316" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+    </svg>
+)
 
-    const from = useForm({
-        resolver: zodResolver(acceptMessageSchema)
+const SignUP = () => {
+    const router = useRouter()
+    const [username, setUsername] = useState("")
+    const [usernameMessage, setUsernameMessage] = useState('')
+    const [usernameStatus, setUsernameStatus] = useState("idle")
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const debounced = useDebounceCallback(setUsername, 300)
+
+    const form = useForm<z.infer<typeof SignUpSchema>>({
+        resolver: zodResolver(SignUpSchema),
+        defaultValues: {
+            username: "",
+            email: "",
+            password: "",
+        }
     })
 
-    const { register, setValue, watch } = from
-    const acceptMessage = watch('acceptMessage')
-    const { data: session } = useSession()
-
-    const handleDelete = async (messageId: string) => {
-        setMessage(prevMsg => prevMsg.filter((msg) => msg._id !== messageId))
-    }
-
-    const fetchMessages = useCallback(async () => {
-        setLoading(true)
-        setIsSwitchLoading(false)
-        try {
-            const response = await axios.get('/api/getmessages')
-            if (response.status !== 200) {
-                toast.error(response.data.message ?? 'Failed to fetch messages')
-                return
-            }
-            setMessage(response.data.messages || [])
-            toast.success('Messages fetched successfully')
-        } catch (error) {
-            const axiosError = error as AxiosError
-            const errorMessage = axiosError.response?.data?.message ?? 'Failed to fetch messages'
-            toast.error(errorMessage)
-        } finally {
-            setLoading(false)
-            setIsSwitchLoading(false)
-        }
-    }, [setMessage])
-
-    const fetchAcceptMessage = useCallback(async () => {
-        try {
-            const response = await axios.get('/api/acceptmessage')
-            if (response.status !== 200) {
-                toast.error(response.data.message ?? 'Failed to fetch message acceptance status')
-                return
-            }
-            const parsedData = acceptMessageSchema.safeParse({ acceptMessage: response.data.isAcceptingMessages })
-            if (!parsedData.success) return
-            setValue('acceptMessage', parsedData.data.acceptMessage)
-        } catch (error) {
-            const axiosError = error as AxiosError
-            const errorMessage = axiosError.response?.data?.message ?? 'Failed to fetch message acceptance status'
-            toast.error(errorMessage)
-        }
-    }, [setValue])
-
     useEffect(() => {
-        if (!session?.user) return
-        fetchMessages()
-        fetchAcceptMessage()
-    }, [session, fetchMessages, fetchAcceptMessage])
+        const checkUsername = async () => {
+            if (!username || username.length < 3) {
+                setUsernameMessage('');
+                setUsernameStatus("idle");
+                return;
+            }
+            setUsernameStatus("checking");
+            setUsernameMessage('');
+            try {
+                const response = await axios.get(`/api/uniqueusername?username=${username}`)
+                if (response.data.success) {
+                    setUsernameMessage('Username is available!');
+                    setUsernameStatus("available");
+                } else {
+                    setUsernameMessage('Username is already taken');
+                    setUsernameStatus("taken");
+                }
+            } catch (error) {
+                setUsernameMessage('An error occurred while checking the username.');
+                setUsernameStatus("error");
+            }
+        };
+        checkUsername();
+    }, [username])
 
-    const handleSwitch = async () => {
+    const onSubmit = async (data: z.infer<typeof SignUpSchema>) => {
+        setIsSubmitting(true);
         try {
-            const response = await axios.post('/api/acceptmessage', {
-                acceptMessage: !acceptMessage
-            })
-            setValue("acceptMessage", !acceptMessage)
-            toast.success(response.data.message)
+            const response = await axios.post('/api/signup', data);
+            if (!response.data.success) {
+                toast.error(response.data.message || "Signup failed. Please try again.");
+                setIsSubmitting(false);
+                return;
+            }
+            toast.success("Signup Successful. redirecting to the verify page", response.data.message);
+            router.replace(`/verify/${username}?flow=signup`)
         } catch (error) {
-            const axiosError = error as AxiosError
-            const errorMessage = axiosError.response?.data?.message ?? 'Failed to update message acceptance status'
-            toast.error(errorMessage)
+            const axiosError = error as AxiosError;
+            console.error("Error during signup:", axiosError);
+            toast.error("An error occurred during signup. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
-    }
-
-    const username = session?.user?.username
-    const baseUrl = typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host}` : ''
-    const profileUrl = `${baseUrl}/u/${username}`
-
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(profileUrl)
-        toast.success("Profile URL has been copied to clipboard.")
     }
 
     return (
         <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
             <div
                 className="absolute inset-0 bg-cover bg-center z-0"
-                style={{ backgroundImage: 'url("https://res.cloudinary.com/dooekcvv0/image/upload/v1751043259/wgzpmoegba4kb6pyirf9.jpg")' }}
+                style={{
+                    backgroundImage: 'url("https://res.cloudinary.com/dooekcvv0/image/upload/v1751043259/wgzpmoegba4kb6pyirf9.jpg")',
+                }}
             ></div>
 
-            <div className="relative z-10 w-full max-w-5xl mx-4 p-8 rounded-2xl border shadow-lg backdrop-blur-xs">
-                <h2 className="text-3xl font-bold text-center mb-6 tracking-wider text-orange-400">
-                    Your Anonymous Inbox
+            <div
+                className="relative z-10 w-full max-w-md mx-4 p-8 rounded-2xl border shadow-lg backdrop-blur-xs"
+            >
+                <h2 className="text-3xl font-bold text-center mb-7 tracking-wider text-orange-400">
+                    Create Your Fiery Identity
                 </h2>
 
-                <div className="mb-6">
-                    <label className="text-orange-300 font-semibold block mb-1">Your Profile Link</label>
-                    <div className="flex flex-col md:flex-row items-center gap-3">
-                        <input
-                            type="text"
-                            value={profileUrl}
-                            disabled
-                            className="w-full flex-1 bg-black/30 border border-orange-500 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <FormField
+                            control={form.control}
+                            name="username"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-orange-300 font-semibold">Username</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                debounced(e.target.value);
+                                            }}
+                                            placeholder="Enter your username"
+                                            className="bg-black/30 border border-orange-500 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                            autoComplete="off"
+                                        />
+                                    </FormControl>
+                                    <div className="min-h-[1.5em] mt-1">
+                                        {usernameStatus === "checking" && (
+                                            <span className="flex items-center gap-2 text-orange-300">{spinner} Checking...</span>
+                                        )}
+                                        {usernameStatus === "available" && (
+                                            <span className="text-green-400">🎉 {usernameMessage}</span>
+                                        )}
+                                        {usernameStatus === "taken" && (
+                                            <span className="text-red-400">😕 {usernameMessage}</span>
+                                        )}
+                                        {usernameStatus === "error" && (
+                                            <span className="text-yellow-400">⚠️ {usernameMessage}</span>
+                                        )}
+                                    </div>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
+
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-orange-300 font-semibold">Email</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="email"
+                                            {...field}
+                                            placeholder="Enter your email"
+                                            className="bg-black/30 border border-orange-500 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-orange-300 font-semibold">Password</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="password"
+                                            {...field}
+                                            placeholder="Enter your password"
+                                            className="bg-black/30 border border-orange-500 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         <Button
-                            onClick={copyToClipboard}
-                            className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-2 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600"
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full flex items-center justify-center gap-2 text-white font-semibold bg-gradient-to-r from-orange-600 to-red-600 py-3 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600 transition-all duration-300"
                         >
-                            Copy Link
+                            {isSubmitting && spinner}
+                            {isSubmitting ? "Creating..." : "Create Account"}
                         </Button>
-                    </div>
-                </div>
-
-                <div className="mb-6 flex items-center gap-4">
-                    <Switch
-                        {...register("acceptMessage")}
-                        checked={acceptMessage}
-                        onCheckedChange={handleSwitch}
-                        disabled={isSwitchLoading}
-                        className="data-[state=checked]:bg-orange-600 data-[state=unchecked]:bg-orange-300 border-2 border-orange-400 w-16 h-8"
-                    />
-                    <span className="text-base text-orange-200">
-                        Accept Messages: {" "}
-                        <span className={acceptMessage ? "text-green-400" : "text-red-400"}>{acceptMessage ? 'On' : 'Off'}</span>
-                    </span>
-                </div>
-
-                <Separator className="bg-orange-500 mb-6" />
-
-                <div className="flex justify-end mb-6">
-                    <Button
-                        variant="outline"
-                        onClick={(e) => {
-                            e.preventDefault()
-                            fetchMessages()
-                        }}
-                        className="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition"
-                    >
-                        {loading ? (
-                            <Loader className="h-4 w-4 animate-spin" />
-                        ) : (
-                            <RefreshCcw className="h-4 w-4" />
-                        )}
-                    </Button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {message.length > 0 ? (
-                        message.map((msg) => (
-                            <CustomCard key={msg._id} message={msg} callBack={handleDelete} />
-                        ))
-                    ) : (
-                        <p className="col-span-2 text-center text-orange-100 opacity-70">No messages to display.</p>
-                    )}
+                    </form>
+                </Form>
+                <div>
+                    <p className="mt-4 text-center text-sm text-white">
+                        Already have an account?
+                        <a href="/signin" className="text-orange-400 hover:underline ml-1">
+                            Sign In
+                        </a>
+                    </p>
                 </div>
             </div>
         </div>
     )
 }
 
-export default Dashboard
+export default SignUP
