@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 import connectDB from "./lib/db"
 import User from "@/models/user.model"
 import bcrypt from "bcryptjs"
-import { SignUpSchema } from "./schemas/signUpSchema"
+import SignInSchema from "./schemas/signInSchema"
 
 
 
@@ -26,7 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 try {
 
-                    const { email, password } = await SignUpSchema.parseAsync(credentials)
+                    const { email, password } = await SignInSchema.parseAsync(credentials)
                     const user = await User.findOne({ email: email })
 
                     if (!user) {
@@ -72,13 +72,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
         async jwt({ token, user }) {
             if (user) {
-                token.id = user._id
-                token.username = user.username
-                token.isVerified = user.isVerified
+                token.id = user._id.toString(); // <-- ensure string
+                token.username = user.username;
+                token.isVerified = user.isVerified;
             }
-            return token
+            return token;
         },
-        
+
     },
     session: {
         strategy: "jwt",

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export {default} from "next-auth"
 
 export async function middleware(request: NextRequest) {
-    const token = await getToken({ req: request });
+    const token = await getToken({ req: request,secret: process.env.AUTH_SECRET });
     const url = request.nextUrl
 
     if (token && (

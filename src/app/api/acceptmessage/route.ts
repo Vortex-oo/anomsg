@@ -80,6 +80,8 @@ export async function GET() {
 
     try {
         const userId = user.id
+        console.log("User ID:", typeof(user.id), " ", userId);
+        
 
         const foundUser = await User.findById(userId)
 
@@ -87,7 +89,7 @@ export async function GET() {
         if (!foundUser) {
             // User not found
             return Response.json(
-                { success: false, message: 'User not found' },
+                { success: false, message: 'User not found in mongoDB' },
                 { status: 404 }
             );
         }
