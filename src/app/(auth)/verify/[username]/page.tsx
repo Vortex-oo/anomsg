@@ -26,10 +26,10 @@ const VerifyCode = () => {
 
     const onSubmit = async (data: z.infer<typeof VerifySchema>) => {
         try {
-
+            console.log("Sending to /api/codeverification", { username: params.username, code: data.code }) //have to remove it
             const response = await axios.post('/api/codeverification', {
                 username: params.username,
-                code: data.code
+                verifyCode: data.code
             })
 
             if (response.data.success) {

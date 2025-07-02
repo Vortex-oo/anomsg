@@ -26,6 +26,8 @@ const Dashboard = () => {
   const { register, setValue, watch } = from
   const acceptMessage = watch('acceptMessage')
   const { data: session } = useSession()
+  console.log('session', session);
+  
 
   const handleDelete = async (messageId: string) => {
     setMessage(prevMsg => prevMsg.filter((msg) => msg._id !== messageId))
@@ -44,7 +46,7 @@ const Dashboard = () => {
       toast.success('Messages fetched successfully')
     } catch (error) {
       const axiosError = error as AxiosError
-      const errorMessage = axiosError.response?.data?.message ?? 'Failed to fetch messages'
+      const errorMessage = (axiosError.response?.data as { message?: string })?.message ?? 'Failed to fetch messages'
       toast.error(errorMessage)
     } finally {
       setLoading(false)
@@ -64,15 +66,16 @@ const Dashboard = () => {
       setValue('acceptMessage', parsedData.data.acceptMessage)
     } catch (error) {
       const axiosError = error as AxiosError
-      const errorMessage = axiosError.response?.data?.message ?? 'Failed to fetch message acceptance status'
+      const errorMessage = (axiosError.response?.data as { message?: string })?.message ?? 'Failed to fetch message acceptance status'
       toast.error(errorMessage)
     }
   }, [setValue])
 
   useEffect(() => {
-    if (!session?.user) return
-    fetchMessages()
-    fetchAcceptMessage()
+    if (session && session.user) {
+      fetchMessages()
+      fetchAcceptMessage()
+    }
   }, [session, fetchMessages, fetchAcceptMessage])
 
   const handleSwitch = async () => {
@@ -84,7 +87,7 @@ const Dashboard = () => {
       toast.success(response.data.message)
     } catch (error) {
       const axiosError = error as AxiosError
-      const errorMessage = axiosError.response?.data?.message ?? 'Failed to update message acceptance status'
+      const errorMessage = (axiosError.response?.data as { message?: string })?.message ?? 'Failed to update message acceptance status'
       toast.error(errorMessage)
     }
   }
