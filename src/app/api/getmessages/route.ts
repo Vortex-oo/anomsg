@@ -27,18 +27,27 @@ export async function GET(req: Request) {
         const userId = user.id;
 
         const userResult = await User.aggregate([
-            { $match: { id: new mongoose.Types.ObjectId(userId) } },
+            { $match: { id: userId } },
             { $unwind: "$messages" },
             { $sort: { "message.createdAt": -1 } },
             { $group:{_id:"$_id", messages:{$push:"$messages"}}}
         ])
 
-        if (!userResult || userResult.length<=0) {
+        if (!userResult) {
             return NextResponse.json({
                 message: "User Not Found",
                 success: false
             },
-                { status: 401 })
+                { status: 400 })
+        }
+
+        if ( userResult.length<=0) {
+            return NextResponse.json({
+                message:"No Message Found",
+                success:false
+            },{
+                status:400
+            })
         }
 
         return NextResponse.json({
