@@ -11,8 +11,9 @@ import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
-import { Loader, RefreshCcw } from 'lucide-react'
+import { Copy, Loader, RefreshCcw } from 'lucide-react'
 import CustomCard from '@/components/card'
+
 
 const Dashboard = () => {
   const [isSwitchLoading, setIsSwitchLoading] = useState(false)
@@ -115,18 +116,18 @@ const Dashboard = () => {
 
         <div className="mb-6">
           <label className="text-orange-300 font-semibold block mb-1">Your Profile Link</label>
-          <div className="flex flex-col md:flex-row items-center gap-3">
+          <div className="flex flex-col md:flex-row items-center gap-3 border border-orange-500 bg-black/30 p-3 rounded-3xl  ">
             <input
               type="text"
               value={profileUrl}
               disabled
-              className="w-full flex-1 bg-black/30 border border-orange-500 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full flex-1  text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
             <Button
               onClick={copyToClipboard}
-              className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-2 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600"
+              className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-2 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600 hover:cursor-pointer "
             >
-              Copy Link
+              <Copy/>
             </Button>
           </div>
         </div>
@@ -137,7 +138,7 @@ const Dashboard = () => {
             checked={acceptMessage}
             onCheckedChange={handleSwitch}
             disabled={isSwitchLoading}
-            className="data-[state=checked]:bg-orange-600 data-[state=unchecked]:bg-orange-300 border-2 border-orange-400 w-16 h-8"
+            className="data-[state=checked]:bg-orange-600 data-[state=unchecked]:bg-orange-300 border-2 border-orange-400 w-16 h-8 hover:cursor-pointer"
           />
           <span className="text-base text-orange-200">
             Accept Messages: {" "}
@@ -154,7 +155,7 @@ const Dashboard = () => {
               e.preventDefault()
               fetchMessages()
             }}
-            className="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition"
+            className="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition hover:cursor-pointer"
           >
             {loading ? (
               <Loader className="h-4 w-4 animate-spin" />
