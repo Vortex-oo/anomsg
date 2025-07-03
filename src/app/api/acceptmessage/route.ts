@@ -26,7 +26,7 @@ export async function POST(req: Request) {
         const userId = user.id
         const { acceptMessage } = await req.json()
 
-        const updatedUser = await User.findById(
+        const updatedUser = await User.findByIdAndUpdate(
             userId,
             { isAcceptingMessages: acceptMessage },
             { new: true }
