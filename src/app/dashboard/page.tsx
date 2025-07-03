@@ -138,7 +138,7 @@ const Dashboard = () => {
             checked={acceptMessage}
             onCheckedChange={handleSwitch}
             disabled={isSwitchLoading}
-            className="data-[state=checked]:bg-orange-600 data-[state=unchecked]:bg-orange-300 border-2 border-orange-400 w-16 h-8 hover:cursor-pointer"
+            className="data-[state=unchecked]:bg-transparent data-[state=checked]:bg-orange-300 border-2 border-white   hover:cursor-pointer"
           />
           <span className="text-base text-orange-200">
             Accept Messages: {" "}
