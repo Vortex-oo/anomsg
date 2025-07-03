@@ -20,7 +20,7 @@ const Navbar = () => {
                     {session ? (
                         <>
                             <span className="text-sm md:text-base text-[#F7F7F7] font-medium">
-                                Welcome, <span className="text-[#A3C9A8] font-semibold">{user?.username || 'User'}</span>
+                                Welcome, <span className="text-[#A3C9A8] font-semibold">{user?.username.toUpperCase() || 'User'}</span>
                             </span>
 
                             <Button
