@@ -13,7 +13,15 @@ import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Copy, Loader, RefreshCcw } from 'lucide-react'
 import CustomCard from '@/components/card'
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import Autoplay from "embla-carousel-autoplay"
+import { Card, CardContent } from "@/components/ui/card"
 
 const Dashboard = () => {
   const [isSwitchLoading, setIsSwitchLoading] = useState(false)
@@ -28,7 +36,6 @@ const Dashboard = () => {
   const acceptMessage = watch('acceptMessage')
   const { data: session } = useSession()
   console.log('session', session);
-  
 
   const handleDelete = async (messageId: string) => {
     setMessage(prevMsg => prevMsg.filter((msg) => msg._id !== messageId))
@@ -109,25 +116,25 @@ const Dashboard = () => {
         style={{ backgroundImage: 'url("https://res.cloudinary.com/dooekcvv0/image/upload/v1751043259/wgzpmoegba4kb6pyirf9.jpg")' }}
       ></div>
 
-      <div className="relative z-10 w-full max-w-5xl mx-4 p-8 rounded-2xl border shadow-lg backdrop-blur-xs">
+      <div className="relative z-10 w-full max-w-6xl mx-4 p-8 rounded-2xl border shadow-lg backdrop-blur-xs">
         <h2 className="text-3xl font-bold text-center mb-6 tracking-wider text-orange-400">
           Your Anonymous Inbox
         </h2>
 
         <div className="mb-6">
           <label className="text-orange-300 font-semibold block mb-1">Your Profile Link</label>
-          <div className="flex flex-col md:flex-row items-center gap-3 border border-orange-500 bg-black/30 p-3 rounded-3xl  ">
+          <div className="flex flex-col md:flex-row items-center gap-3 border border-orange-500 bg-black/30 p-3 rounded-3xl">
             <input
               type="text"
               value={profileUrl}
               disabled
-              className="w-full flex-1  text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full flex-1 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
             <Button
               onClick={copyToClipboard}
-              className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-2 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600 hover:cursor-pointer "
+              className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-2 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600 hover:cursor-pointer"
             >
-              <Copy/>
+              <Copy />
             </Button>
           </div>
         </div>
@@ -138,7 +145,7 @@ const Dashboard = () => {
             checked={acceptMessage}
             onCheckedChange={handleSwitch}
             disabled={isSwitchLoading}
-            className="data-[state=unchecked]:bg-transparent data-[state=checked]:bg-orange-300 border-2 border-white   hover:cursor-pointer"
+            className="data-[state=unchecked]:bg-transparent data-[state=checked]:bg-orange-300 border-2 border-white hover:cursor-pointer"
           />
           <span className="text-base text-orange-200">
             Accept Messages: {" "}
@@ -165,15 +172,44 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {message.length > 0 ? (
-            message.map((msg) => (
-              <CustomCard key={msg._id} message={msg} callBack={handleDelete} />
-            ))
-          ) : (
-            <p className="col-span-2 text-center text-orange-100 opacity-70">No messages to display.</p>
-          )}
-        </div>
+        <Carousel
+          className="w-full max-w-full"
+          plugins={[Autoplay({ delay: 2000 })]}
+        >
+          <CarouselContent className="flex gap-4">
+            {
+              message.length > 0 ? (
+                message.map((msg) => (
+                  <CarouselItem
+                    key={msg._id}
+                    className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                  >
+                    <div className="p-2">
+                      <CustomCard message={msg} callBack={handleDelete} />
+                    </div>
+                  </CarouselItem>
+                ))
+              ) : (
+                Array.from({ length: 5 }).map((_, index) => (
+                  <CarouselItem
+                    key={index}
+                    className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                  >
+                    <div className="p-2">
+                      <Card className="bg-black/30 border border-orange-500 hover:cursor-pointer text-white min-h-[200px] flex items-center justify-center">
+                        <CardContent className="text-3xl font-semibold text-center w-full h-full flex items-center justify-center">
+                          No Message
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))
+              )
+            }
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </div>
   )
