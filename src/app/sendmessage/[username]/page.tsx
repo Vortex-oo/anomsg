@@ -31,7 +31,7 @@ const User = () => {
 
     const onSubmit = async (data: { content: string }) => {
         try {
-            const response = await axios.post('/api/sendmessage', {
+            const response = await axios.post('/api/sendmessages', {
                 content: data.content,
                 username: decodedUsername
             })
