@@ -116,7 +116,7 @@ const Dashboard = () => {
         </h2>
 
         <div className="space-y-4">
-          <label className="text-white font-mono">Your Profile Link</label>
+          <label className="text-white inline-block  font-mono ">Your Profile Link</label>
           <div className="flex flex-col md:flex-row items-center gap-3 border border-white bg-black p-3 rounded-xl">
             <input
               type="text"
@@ -132,32 +132,45 @@ const Dashboard = () => {
             </Button>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Switch
-              {...register("acceptMessage")}
-              checked={acceptMessage}
-              onCheckedChange={handleSwitch}
-              disabled={isSwitchLoading}
-              className="data-[state=unchecked]:bg-transparent data-[state=checked]:bg-slate-700  border border-white hover:cursor-pointer"
-            />
-            <span className="text-white font-mono">
-              Accept Messages: <span className={acceptMessage ? "text-green-400" : "text-red-400"}>{acceptMessage ? 'On' : 'Off'}</span>
-            </span>
+          <div className="flex justify-between items-center border-t border-white pt-4">
+            {/* Left: Switch */}
+            <div className="flex items-center gap-4">
+              <Switch
+                {...register("acceptMessage")}
+                checked={acceptMessage}
+                onCheckedChange={handleSwitch}
+                disabled={isSwitchLoading}
+                className="data-[state=unchecked]:bg-transparent data-[state=checked]:bg-slate-700 border border-white hover:cursor-pointer"
+              />
+              <span className="text-white font-mono">
+                Accept Messages:{" "}
+                <span className={acceptMessage ? "text-green-400" : "text-red-400"}>
+                  {acceptMessage ? "On" : "Off"}
+                </span>
+              </span>
+            </div>
+
+            {/* Right: Refresh */}
+            <div>
+              <Button
+                variant="outline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  fetchMessages();
+                }}
+                className="border border-white bg-transparent  text-white hover:bg-white hover:text-black transition font-mono hover:cursor-pointer"
+              >
+                {loading ? (
+                  <Loader className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCcw className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
 
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              onClick={(e) => {
-                e.preventDefault()
-                fetchMessages()
-              }}
-              className="border border-white text-white hover:bg-white hover:text-black transition font-mono hover:cursor-pointer"
-            >
-              {loading ? <Loader className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4 text-black" />}
-            </Button>
-          </div>
         </div>
+
 
         <Carousel
           className="w-full"
