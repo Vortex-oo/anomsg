@@ -10,22 +10,25 @@ const Navbar = () => {
     const user = session?.user
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50  backdrop-brightness-100  py-4 px-6 ">
+        <header className="fixed top-0 left-0 right-0 z-50   py-4 px-6 bg-black ">
             <nav className="flex items-center justify-between max-w-6xl mx-auto text-white">
-                <Link href="/" className="text-2xl font-bold tracking-wide text-[#A3C9A8] hover:text-[#F5E8C7] transition duration-200">
-                    ANOMSG 🚀
+                <Link href="/" className="text-2xl font-bold tracking-wide text-[#ffff] hover:text-[#F5E8C7] transition duration-200">
+                    {session ? (
+                        <>
+                            <>
+                                <span>Welcome {user?.username.toUpperCase()}</span>
+                            </>
+
+                        </>
+                    ) : (<span>Welcome To ANOMSG</span>)}
                 </Link>
 
                 <div className="flex items-center space-x-4">
                     {session ? (
                         <>
-                            <span className="text-sm md:text-base text-[#F7F7F7] font-medium">
-                                Welcome, <span className="text-[#A3C9A8] font-semibold">{user?.username.toUpperCase() || 'User'}</span>
-                            </span>
-
                             <Button
                                 onClick={() => signOut()}
-                                className="bg-gradient-to-r from-red-400 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-500 hover:to-red-700 transition-all hover:cursor-pointer "
+                                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black  px-4 py-2 rounded-lgl hover:cursor-pointer font-mono "
                             >
                                 Logout
                             </Button>
