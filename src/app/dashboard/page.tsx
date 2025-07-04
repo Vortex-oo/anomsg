@@ -35,7 +35,6 @@ const Dashboard = () => {
   const { register, setValue, watch } = from
   const acceptMessage = watch('acceptMessage')
   const { data: session } = useSession()
-  console.log('session', session);
 
   const handleDelete = async (messageId: string) => {
     setMessage(prevMsg => prevMsg.filter((msg) => msg._id !== messageId))
@@ -102,7 +101,7 @@ const Dashboard = () => {
 
   const username = session?.user?.username
   const baseUrl = typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host}` : ''
-  const profileUrl = `${baseUrl}/u/${username}`
+  const profileUrl = `${baseUrl}/sendmessage/${username}`
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl)
@@ -110,70 +109,58 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
-      <div
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: 'url("https://res.cloudinary.com/dooekcvv0/image/upload/v1751043259/wgzpmoegba4kb6pyirf9.jpg")' }}
-      ></div>
-
-      <div className="relative z-10 w-full max-w-6xl mx-4 p-8 rounded-2xl border shadow-lg backdrop-blur-xs">
-        <h2 className="text-3xl font-bold text-center mb-6 tracking-wider text-orange-400">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6 py-10">
+      <div className="w-full max-w-6xl border border-white rounded-2xl p-8 space-y-8">
+        <h2 className="text-2xl font-mono text-white border-b border-white pb-3 text-center">
           Your Anonymous Inbox
         </h2>
 
-        <div className="mb-6">
-          <label className="text-orange-300 font-semibold block mb-1">Your Profile Link</label>
-          <div className="flex flex-col md:flex-row items-center gap-3 border border-orange-500 bg-black/30 p-3 rounded-3xl">
+        <div className="space-y-4">
+          <label className="text-white font-mono">Your Profile Link</label>
+          <div className="flex flex-col md:flex-row items-center gap-3 border border-white bg-black p-3 rounded-xl">
             <input
               type="text"
               value={profileUrl}
               disabled
-              className="w-full flex-1 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full text-white bg-black border border-white rounded-lg px-4 py-2 font-mono"
             />
             <Button
               onClick={copyToClipboard}
-              className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-2 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600 hover:cursor-pointer"
+              className="border border-white text-white font-mono px-4 py-2 rounded-lg hover:bg-white hover:text-black transition"
             >
               <Copy />
             </Button>
           </div>
-        </div>
 
-        <div className="mb-6 flex items-center gap-4">
-          <Switch
-            {...register("acceptMessage")}
-            checked={acceptMessage}
-            onCheckedChange={handleSwitch}
-            disabled={isSwitchLoading}
-            className="data-[state=unchecked]:bg-transparent data-[state=checked]:bg-orange-300 border-2 border-white hover:cursor-pointer"
-          />
-          <span className="text-base text-orange-200">
-            Accept Messages: {" "}
-            <span className={acceptMessage ? "text-green-400" : "text-red-400"}>{acceptMessage ? 'On' : 'Off'}</span>
-          </span>
-        </div>
+          <div className="flex items-center gap-4">
+            <Switch
+              {...register("acceptMessage")}
+              checked={acceptMessage}
+              onCheckedChange={handleSwitch}
+              disabled={isSwitchLoading}
+              className="data-[state=unchecked]:bg-transparent data-[state=checked]:bg-slate-700  border border-white hover:cursor-pointer"
+            />
+            <span className="text-white font-mono">
+              Accept Messages: <span className={acceptMessage ? "text-green-400" : "text-red-400"}>{acceptMessage ? 'On' : 'Off'}</span>
+            </span>
+          </div>
 
-        <Separator className="bg-orange-500 mb-6" />
-
-        <div className="flex justify-end mb-6">
-          <Button
-            variant="outline"
-            onClick={(e) => {
-              e.preventDefault()
-              fetchMessages()
-            }}
-            className="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition hover:cursor-pointer"
-          >
-            {loading ? (
-              <Loader className="h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCcw className="h-4 w-4" />
-            )}
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault()
+                fetchMessages()
+              }}
+              className="border border-white text-white hover:bg-white hover:text-black transition font-mono hover:cursor-pointer"
+            >
+              {loading ? <Loader className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4 text-black" />}
+            </Button>
+          </div>
         </div>
 
         <Carousel
-          className="w-full max-w-full"
+          className="w-full"
           plugins={[Autoplay({ delay: 2000 })]}
         >
           <CarouselContent className="flex gap-4">
@@ -193,11 +180,11 @@ const Dashboard = () => {
                 Array.from({ length: 5 }).map((_, index) => (
                   <CarouselItem
                     key={index}
-                    className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                    className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4  "
                   >
                     <div className="p-2">
-                      <Card className="bg-black/30 border border-orange-500 hover:cursor-pointer text-white min-h-[200px] flex items-center justify-center">
-                        <CardContent className="text-3xl font-semibold text-center w-full h-full flex items-center justify-center">
+                      <Card className="bg-black border border-white text-white min-h-[200px] flex items-center justify-center">
+                        <CardContent className="text-lg font-mono text-center w-full h-full flex items-center justify-center">
                           No Message
                         </CardContent>
                       </Card>
