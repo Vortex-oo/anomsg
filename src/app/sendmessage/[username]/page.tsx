@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams } from 'next/navigation'
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -19,6 +19,8 @@ import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
 
 const User = () => {
+    const [isSending, setIsSending] = useState(false)
+
     const form = useForm({
         resolver: zodResolver(messageSchema),
         defaultValues: {
@@ -31,12 +33,14 @@ const User = () => {
 
     const onSubmit = async (data: { content: string }) => {
         try {
+            setIsSending(true)
             const response = await axios.post('/api/sendmessages', {
                 content: data.content,
                 username: decodedUsername
             })
 
             if (response.status === 200) {
+                setIsSending(false)
                 toast.success(response.data.message)
                 form.reset()
             }
@@ -44,6 +48,9 @@ const User = () => {
             const axiosError = error as AxiosError
             const errorMessage = (axiosError.response?.data as { message?: string })?.message ?? axiosError.message ?? "An error occurred. Please try again."
             toast.error(errorMessage)
+        }
+        finally{
+            setIsSending(false)
         }
     }
 
@@ -77,7 +84,9 @@ const User = () => {
                             type="submit"
                             className="w-full border border-white text-white font-mono text-lg hover:bg-white/90 hover:text-black transition duration-200 rounded-lg py-3 hover:cursor-pointer "
                         >
-                            Send
+                            {
+                                isSending ? "Sending..." : "Send"
+                            }
                         </Button>
                     </form>
                 </Form>
