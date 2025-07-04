@@ -39,40 +39,42 @@ const CustomCard = ({ message, callBack }: MessageCardProps) => {
     };
 
     return (
-        <div className="relative border border-white rounded-xl p-4 text-white bg-black font-mono text-xl">
-            <p className="whitespace-pre-wrap">{message.content}</p>
+        <div className="relative border border-white rounded-xl bg-black font-mono text-xl pt-10 pr-10 pb-4 pl-4 text-white">
+    {/* Message Text */}
+    <p className="whitespace-pre-wrap">{message.content}</p>
 
-            {/* Delete Button in top right */}
-            <div className="absolute top-3 right-2">
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            className="border-2 border-red-500 text-white hover:bg-red-500 hover:text-black rounded-lg p-2 hover:cursor-pointer"
-                        >
-                            <X className="w-5 h-5" />
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="bg-black text-white border border-white">
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This will permanently delete the message. This action cannot be undone.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel className="text-white border border-white">Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                                onClick={handleDeleteConfirm}
-                                className="bg-red-500 hover:bg-red-600 text-white"
-                            >
-                                Delete
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </div>
-        </div>
+    {/* Delete Button in Top Right */}
+    <div className="absolute top-2 right-2">
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button
+                    variant="ghost"
+                    className="border-2 border-red-500 text-white hover:bg-red-500 hover:text-black rounded-lg p-2 hover:cursor-pointer"
+                >
+                    <X className="w-5 h-5" />
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-black text-white border border-white">
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This will permanently delete the message. This action cannot be undone.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel className="text-white border border-white">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                        onClick={handleDeleteConfirm}
+                        className="bg-red-500 hover:bg-red-600 text-white"
+                    >
+                        Delete
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </div>
+</div>
+
     )
 }
 
