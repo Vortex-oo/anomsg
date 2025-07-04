@@ -1,9 +1,4 @@
 import {
-    Card,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -20,23 +15,19 @@ import { toast } from "sonner"
 import { IMessage } from "@/models/message.model"
 import axios, { AxiosError } from "axios"
 
-
 type MessageCardProps = {
     message: IMessage;
     callBack: (messageId: string) => void;
 }
-const CustomCard = ({ message, callBack }: MessageCardProps) => {
 
+const CustomCard = ({ message, callBack }: MessageCardProps) => {
     const handleDeleteConfirm = async () => {
         try {
             const response = await axios.delete(
                 `/api/delete-message/${message._id}`
             );
-            toast.success(
-                "title:",response.data.message ?? 'Message deleted successfully'
-            );
+            toast.success(response.data.message ?? 'Message deleted successfully');
             callBack(message._id);
-
         } catch (error) {
             const axiosError = error as AxiosError;
             const errorMessage =
@@ -46,31 +37,41 @@ const CustomCard = ({ message, callBack }: MessageCardProps) => {
             toast.error(errorMessage ?? 'Failed to delete message');
         }
     };
+
     return (
-        <div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>{message.content}</CardTitle>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive"><X /></Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete your
-                                    account and remove your data from our servers.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDeleteConfirm} >Continue</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </CardHeader>
-            </Card>
+        <div className="relative border border-white rounded-xl p-4 text-white bg-black font-mono text-xl">
+            <p className="whitespace-pre-wrap">{message.content}</p>
+
+            {/* Delete Button in top right */}
+            <div className="absolute top-3 right-2">
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            className="border-2 border-red-500 text-white hover:bg-red-500 hover:text-black rounded-lg p-2 hover:cursor-pointer"
+                        >
+                            <X className="w-5 h-5" />
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="bg-black text-white border border-white">
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will permanently delete the message. This action cannot be undone.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel className="text-white border border-white">Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={handleDeleteConfirm}
+                                className="bg-red-500 hover:bg-red-600 text-white"
+                            >
+                                Delete
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
         </div>
     )
 }
