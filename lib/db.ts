@@ -10,7 +10,10 @@ const connectDB = async () => {
 
     try {
 
-        const dbUri ='mongodb://127.0.0.1:27017/anomsg';
+        const dbUri = process.env.MONGODB_URI;
+        if (!dbUri) {
+            throw new Error("MONGODB_URI environment variable is not defined");
+        }
 
         const dbConnection = await mongoose.connect(dbUri)
 
