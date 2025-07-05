@@ -1,4 +1,5 @@
 "use client"
+
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 import { useForm } from 'react-hook-form'
@@ -7,72 +8,64 @@ import VerifySchema from '../../../../../schemas/verifySchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import axios, { AxiosError } from 'axios'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-
 const VerifyCode = () => {
-
     const params = useParams<{ username: string }>()
-    const form = useForm<z.infer<typeof VerifySchema>>({
-        resolver: zodResolver(VerifySchema)
-    })
-    const router = useRouter()
     const searchParams = useSearchParams()
-
+    const router = useRouter()
 
     const from = searchParams.get("flow")
 
+    const form = useForm<z.infer<typeof VerifySchema>>({
+        resolver: zodResolver(VerifySchema),
+    })
+
     const onSubmit = async (data: z.infer<typeof VerifySchema>) => {
         try {
-            console.log("Sending to /api/codeverification", { username: params.username, code: data.code }) //have to remove it
             const response = await axios.post('/api/codeverification', {
                 username: params.username,
                 verifyCode: data.code
             })
 
             if (response.data.success) {
-
-                if (from == "reset") {
-                    toast.success("Verification successful, Redirecting to Reset Password Page")
-                    router.push(`/resetpassword/${params.username}`) // Redirect to reset password page
-                }
-                else {
-                    toast.success("Verification successful! You can now log in.");
-                    router.push('/signin');
+                if (from === "reset") {
+                    toast.success("Verification successful. Redirecting to Reset Password page.")
+                    router.push(`/resetpassword/${params.username}`)
+                } else {
+                    toast.success("Verification successful! You can now log in.")
+                    router.push('/signin')
                 }
             }
-
         } catch (error) {
-            const axiosError = error as AxiosError;
-            if (axiosError.response) {
-                const errorMessage =
-                    typeof axiosError.response.data === 'object' &&
-                        axiosError.response.data !== null &&
-                        'message' in axiosError.response.data
-                        ? (axiosError.response.data as { message?: string }).message
-                        : undefined;
-                toast.error(errorMessage || "Verification failed. Please try again.");
-            } else if (axiosError.request) {
-                toast.error("No response from server. Please check your network connection.");
-            } else {
-                toast.error("An error occurred while verifying the code.");
-            }
+            const axiosError = error as AxiosError
+            const errorMessage =
+                axiosError.response && typeof axiosError.response.data === 'object' && axiosError.response.data !== null && 'message' in axiosError.response.data
+                    ? (axiosError.response.data as { message?: string }).message
+                    : undefined
+
+            toast.error(errorMessage || "Verification failed. Please try again.")
         }
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-950 p-4"> {/* Very dark background */}
-            <div className="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-xl border border-purple-700"> {/* Dark card with purple border */}
-                <div className="text-center mb-6">
-                    <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl text-white mb-2"> {/* White text for heading */}
-                        Verify Your Account
-                    </h1>
-                    <p className="text-gray-400"> {/* Lighter gray for description */}
-                        Enter the verification code sent to your email.
-                    </p>
-                </div>
+        <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6 py-10">
+            <div className="w-full max-w-xl border border-white rounded-2xl p-8 space-y-8">
+                <h2 className="text-2xl font-mono text-white border-b border-white pb-3 text-center">
+                    Verify Your Account
+                </h2>
+                <p className="text-center text-white text-sm font-mono">
+                    Enter the 6-digit code sent to your email.
+                </p>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -81,21 +74,22 @@ const VerifyCode = () => {
                             name="code"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-200">Verification Code</FormLabel> {/* Light gray for label */}
+                                    <FormLabel className="text-white font-mono text-lg">Verification Code</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="e.g., 123456"
                                             {...field}
-                                            className="w-full px-4 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400" // Dark input, purple focus ring
+                                            className="w-full bg-black text-white border border-white font-mono rounded-lg px-4 py-3 text-base"
                                         />
                                     </FormControl>
-                                    <FormMessage className="text-red-400" /> {/* Slightly softer red for dark theme */}
+                                    <FormMessage className="text-red-400" />
                                 </FormItem>
                             )}
                         />
+
                         <Button
                             type="submit"
-                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out shadow-lg" // Purple button
+                            className="w-full border border-white text-white font-mono text-lg hover:bg-white hover:text-black transition duration-200 rounded-lg py-3 hover:cursor-pointer"
                         >
                             Verify Code
                         </Button>
@@ -106,4 +100,4 @@ const VerifyCode = () => {
     )
 }
 
-export default VerifyCode   
+export default VerifyCode
