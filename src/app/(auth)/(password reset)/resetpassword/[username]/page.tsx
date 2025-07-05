@@ -11,19 +11,20 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Loader } from 'lucide-react'
 
-
 export const passwordSchema = z.object({
     password: z.string()
         .min(8, { message: 'Password must be at least 8 characters long' })
         .max(50, { message: 'Password must be at most 50 characters long' })
-        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, { message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character' }),
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+            { message: 'Password must contain uppercase, lowercase, number & special character' }
+        ),
 })
 
-const page = () => {
+const ResetPasswordPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const router = useRouter()
-    const params= useParams()
-
+    const params = useParams()
 
     const form = useForm<z.infer<typeof passwordSchema>>({
         resolver: zodResolver(passwordSchema),
@@ -32,57 +33,39 @@ const page = () => {
         }
     })
 
-    const onsubmit = async (data: z.infer<typeof passwordSchema>)=>{
+    const onsubmit = async (data: z.infer<typeof passwordSchema>) => {
         try {
-            setIsSubmitting(true);
+            setIsSubmitting(true)
             const response = await axios.post('/api/resetpassword', {
                 password: data.password,
-                username: params.username // Assuming you have the username in the URL params
-            });
+                username: params.username
+            })
 
             if (response.data.success) {
-                toast.success("Password reset successfully, Redirecting to login page");
-                router.push('/signin');
+                toast.success("Password reset successful. Redirecting to login.")
+                router.push('/signin')
             } else {
-                toast.error(response.data.message || "Failed to reset password.");
+                toast.error(response.data.message || "Reset failed.")
             }
-
         } catch (error) {
-            const axiosError = error as AxiosError;
-            if (axiosError.response) {
-                const errorMessage =
-                    typeof axiosError.response.data === 'object' &&
-                    axiosError.response.data !== null &&
-                    'message' in axiosError.response.data
-                        ? (axiosError.response.data as { message?: string }).message
-                        : undefined;
-                toast.error(errorMessage || "An error occurred. Please try again.");
-            } else if (axiosError.request) {
-                toast.error("No response from server. Please check your network connection.");
-            } else {
-                toast.error("An error occurred while processing your request.");
-            }
-            
-        }
-        finally{
-            setIsSubmitting(false);
-            form.reset();
+            const axiosError = error as AxiosError
+            const message =
+                typeof axiosError.response?.data === 'object' &&
+                    axiosError.response?.data !== null &&
+                    'message' in axiosError.response?.data
+                    ? (axiosError.response?.data as { message?: string }).message
+                    : "An unexpected error occurred."
+            toast.error(message)
+        } finally {
+            setIsSubmitting(false)
+            form.reset()
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
-            <div
-                className="absolute inset-0 bg-cover bg-center z-0"
-                style={{
-                    backgroundImage: 'url("https://res.cloudinary.com/dooekcvv0/image/upload/v1751043259/wgzpmoegba4kb6pyirf9.jpg")',
-                }}
-            ></div>
-
-            <div
-                className="relative z-10 w-full max-w-md mx-4 p-8 rounded-2xl border shadow-lg backdrop-blur-xs"
-            >
-                <h2 className="text-3xl font-bold text-center mb-7 tracking-wider text-orange-400">
+        <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6 py-10">
+            <div className="w-full max-w-xl border border-white rounded-2xl p-8 space-y-8">
+                <h2 className="text-2xl font-mono text-white border-b border-white pb-3 text-center">
                     Remember your password, not your ex
                 </h2>
 
@@ -93,16 +76,16 @@ const page = () => {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-white">New Password</FormLabel>
+                                    <FormLabel className="text-white font-mono text-lg">New Password</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="password"
                                             placeholder="Enter your new password"
                                             {...field}
-                                            className="bg-gray-800 text-white border border-purple-700 focus:border-orange-400 focus:ring-orange-400"
+                                            className="w-full bg-black text-white border border-white font-mono rounded-lg px-4 py-3 text-base"
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-red-400" />
                                 </FormItem>
                             )}
                         />
@@ -110,9 +93,9 @@ const page = () => {
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full flex items-center justify-center gap-2 text-white font-semibold bg-gradient-to-r from-orange-600 to-red-600 py-3 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600 transition-all duration-300 hover:cursor-pointer"
+                            className="w-full border border-white text-white font-mono text-lg hover:bg-white hover:text-black transition duration-200 rounded-lg py-3 hover:cursor-pointer"
                         >
-                            {isSubmitting && Loader({ className: "animate-spin h-4 w-4" })}
+                            {isSubmitting && <Loader className="h-4 w-4 animate-spin mr-2" />}
                             {isSubmitting ? "Processing..." : "Reset Password"}
                         </Button>
                     </form>
@@ -122,4 +105,4 @@ const page = () => {
     )
 }
 
-export default page
+export default ResetPasswordPage
