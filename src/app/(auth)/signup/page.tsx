@@ -21,9 +21,9 @@ import {
 import { Input } from "@/components/ui/input"
 
 const spinner = (
-    <svg className="animate-spin h-5 w-5 text-orange-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="#f97316" strokeWidth="4"></circle>
-        <path className="opacity-75" fill="#f97316" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
     </svg>
 )
 
@@ -63,7 +63,7 @@ const SignUP = () => {
                     setUsernameStatus("taken");
                 }
             } catch (error) {
-                setUsernameMessage('An error occurred while checking the username.');
+                setUsernameMessage('Username is already taken');
                 setUsernameStatus("error");
             }
         };
@@ -91,29 +91,21 @@ const SignUP = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
-            <div
-                className="absolute inset-0 bg-cover bg-center z-0"
-                style={{
-                    backgroundImage: 'url("https://res.cloudinary.com/dooekcvv0/image/upload/v1751043259/wgzpmoegba4kb6pyirf9.jpg")',
-                }}
-            ></div>
-
-            <div
-                className="relative z-10 w-full max-w-md mx-4 p-8 rounded-2xl border shadow-lg backdrop-blur-xs"
-            >
-                <h2 className="text-3xl font-bold text-center mb-7 tracking-wider text-orange-400">
-                    Create Your Fiery Identity
+        <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6 py-10">
+            <div className="w-full max-w-xl border border-white rounded-2xl p-8 space-y-8">
+                <h2 className="text-2xl font-mono text-white border-b border-white pb-3 text-center">
+                    Create Your Identity
                 </h2>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Username */}
                         <FormField
                             control={form.control}
                             name="username"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-orange-300 font-semibold">Username</FormLabel>
+                                    <FormLabel className="text-white font-mono text-lg">Username</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -122,13 +114,13 @@ const SignUP = () => {
                                                 debounced(e.target.value);
                                             }}
                                             placeholder="Enter your username"
-                                            className="bg-black/30 border border-orange-500 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                            className="bg-black text-white border border-white font-mono rounded-lg px-4 py-3 text-base"
                                             autoComplete="off"
                                         />
                                     </FormControl>
-                                    <div className="min-h-[1.5em] mt-1">
+                                    <div className="min-h-[1.5em] mt-1 font-mono text-sm">
                                         {usernameStatus === "checking" && (
-                                            <span className="flex items-center gap-2 text-orange-300">{spinner} Checking...</span>
+                                            <span className="flex items-center gap-2 text-white">{spinner} Checking...</span>
                                         )}
                                         {usernameStatus === "available" && (
                                             <span className="text-green-400">🎉 {usernameMessage}</span>
@@ -140,45 +132,47 @@ const SignUP = () => {
                                             <span className="text-yellow-400">⚠️ {usernameMessage}</span>
                                         )}
                                     </div>
-                                    <FormMessage />
+                                    <FormMessage className="text-red-400" />
                                 </FormItem>
                             )}
                         />
 
+                        {/* Email */}
                         <FormField
                             control={form.control}
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-orange-300 font-semibold">Email</FormLabel>
+                                    <FormLabel className="text-white font-mono text-lg">Email</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="email"
                                             {...field}
                                             placeholder="Enter your email"
-                                            className="bg-black/30 border border-orange-500 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                            className="bg-black text-white border border-white font-mono rounded-lg px-4 py-3 text-base"
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-red-400" />
                                 </FormItem>
                             )}
                         />
 
+                        {/* Password */}
                         <FormField
                             control={form.control}
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-orange-300 font-semibold">Password</FormLabel>
+                                    <FormLabel className="text-white font-mono text-lg">Password</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="password"
                                             {...field}
                                             placeholder="Enter your password"
-                                            className="bg-black/30 border border-orange-500 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                            className="bg-black text-white border border-white font-mono rounded-lg px-4 py-3 text-base"
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-red-400" />
                                 </FormItem>
                             )}
                         />
@@ -186,21 +180,18 @@ const SignUP = () => {
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full flex items-center justify-center gap-2 text-white font-semibold bg-gradient-to-r from-orange-600 to-red-600 py-3 rounded-xl shadow-md hover:from-red-600 hover:to-orange-600 transition-all duration-300"
+                            className="w-full border border-white text-white font-mono text-lg hover:bg-white hover:text-black transition duration-200 rounded-lg py-3 hover:cursor-pointer"
                         >
                             {isSubmitting && spinner}
                             {isSubmitting ? "Creating..." : "Create Account"}
                         </Button>
                     </form>
                 </Form>
-                <div>
-                    <p className="mt-4 text-center text-sm text-white">
-                        Already have an account?
-                        <a href="/signin" className="text-orange-400 hover:underline ml-1">
-                            Sign In
-                        </a>
-                    </p>
-                </div>
+
+                <p className="text-sm text-center text-white font-mono">
+                    Already have an account?
+                    <a href="/signin" className="text-orange-400 hover:underline ml-1">Sign In</a>
+                </p>
             </div>
         </div>
     )
