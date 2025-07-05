@@ -16,7 +16,7 @@ const Navbar = () => {
                     {session ? (
                         <>
                             <>
-                                <span>Welcome {user?.username.toUpperCase()}</span>
+                                <span>Welcome, {user?.username.toUpperCase()}</span>
                             </>
 
                         </>
@@ -36,12 +36,16 @@ const Navbar = () => {
                     ) : (
                         <>
                             <Link href="/signin">
-                                <Button className="bg-gradient-to-r from-[#635985] to-[#A3C9A8] text-[#18122B] px-4 py-2 rounded-lg hover:from-[#A3C9A8] hover:to-[#635985] transition-all hover:cursor-pointer">
+                                <Button
+                                    className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black  px-4 py-2 rounded-lgl hover:cursor-pointer font-mono "
+                                >
                                     Login
                                 </Button>
                             </Link>
                             <Link href="/signup">
-                                <Button className="bg-gradient-to-r from-[#635985] to-[#A3C9A8] text-[#18122B] px-4 py-2 rounded-lg hover:from-[#A3C9A8] hover:to-[#635985] transition-all hover:cursor-pointer">
+                                <Button
+                                    className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black  px-4 py-2 rounded-lgl hover:cursor-pointer font-mono "
+                                >
                                     Signup
                                 </Button>
                             </Link>
