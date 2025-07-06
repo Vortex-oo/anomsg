@@ -126,7 +126,7 @@ const Dashboard = () => {
             />
             <Button
               onClick={copyToClipboard}
-              className="border border-white text-white font-mono px-4 py-2 rounded-lg hover:bg-white hover:text-black transition"
+              className="border border-white text-white font-mono px-4 py-2 rounded-lg hover:bg-white hover:text-black transition hover:cursor-pointer "
             >
               <Copy />
             </Button>
