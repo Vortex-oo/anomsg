@@ -62,10 +62,10 @@ const CustomCard = ({ message, callBack }: MessageCardProps) => {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="text-white border border-white">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel className="text-black border border-white hover:scale-110 hover:cursor-pointer">Cancel</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDeleteConfirm}
-                        className="bg-red-500 hover:bg-red-600 text-white"
+                        className="bg-red-500 hover:bg-red-600 text-white hover:scale-110 hover:cursor-pointer"
                     >
                         Delete
                     </AlertDialogAction>
