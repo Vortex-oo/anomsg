@@ -23,7 +23,7 @@ type MessageCardProps = {
 const CustomCard = ({ message, callBack }: MessageCardProps) => {
     const handleDeleteConfirm = async () => {
         try {
-            const response = await axios.delete(
+            const response = await axios.post(
                 `/api/delete-message/${message._id}`
             );
             toast.success(response.data.message ?? 'Message deleted successfully');
