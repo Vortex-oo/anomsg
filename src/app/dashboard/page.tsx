@@ -172,44 +172,46 @@ const Dashboard = () => {
         </div>
 
 
-        <Carousel
-          className="w-full"
-          plugins={[Autoplay({ delay: 2000 })]}
-        >
-          <CarouselContent className="flex gap-4">
-            {
-              message.length > 0 ? (
-                message.map((msg) => (
-                  <CarouselItem
-                    key={msg._id}
-                    className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-                  >
-                    <div className="p-2">
-                      <CustomCard message={msg} callBack={handleDelete} />
-                    </div>
-                  </CarouselItem>
-                ))
-              ) : (
-                Array.from({ length: 5 }).map((_, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4  "
-                  >
-                    <div className="p-2">
-                      <Card className="bg-black border border-white text-white min-h-[200px] flex items-center justify-center">
-                        <CardContent className="text-lg font-mono text-center w-full h-full flex items-center justify-center">
-                          No Message
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-                ))
-              )
-            }
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+        <div className='relative'>
+          <Carousel
+            className="w-full"
+            plugins={[Autoplay({ delay: 2000 })]}
+          >
+            <CarouselContent className="flex gap-4">
+              {
+                message.length > 0 ? (
+                  message.map((msg) => (
+                    <CarouselItem
+                      key={msg._id}
+                      className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                    >
+                      <div className="p-2">
+                        <CustomCard message={msg} callBack={handleDelete} />
+                      </div>
+                    </CarouselItem>
+                  ))
+                ) : (
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <CarouselItem
+                      key={index}
+                      className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4  "
+                    >
+                      <div className="p-2">
+                        <Card className="bg-black border border-white text-white min-h-[200px] flex items-center justify-center">
+                          <CardContent className="text-lg font-mono text-center w-full h-full flex items-center justify-center">
+                            No Message
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CarouselItem>
+                  ))
+                )
+              }
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
       </div>
     </div>
   )
