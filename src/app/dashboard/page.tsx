@@ -10,7 +10,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { Separator } from '@/components/ui/separator'
 import { Copy, Loader, RefreshCcw } from 'lucide-react'
 import CustomCard from '@/components/card'
 import {
@@ -116,7 +115,7 @@ const Dashboard = () => {
         </h2>
 
         <div className="space-y-4">
-          <label className="text-white inline-block  font-mono ">Your Profile Link</label>
+          <label className="text-white inline-block font-mono">Your Profile Link</label>
           <div className="flex flex-col md:flex-row items-center gap-3 border border-white bg-black p-3 rounded-xl">
             <input
               type="text"
@@ -133,7 +132,6 @@ const Dashboard = () => {
           </div>
 
           <div className="flex justify-between items-center border-t border-white pt-4">
-            {/* Left: Switch */}
             <div className="flex items-center gap-4">
               <Switch
                 {...register("acceptMessage")}
@@ -150,7 +148,6 @@ const Dashboard = () => {
               </span>
             </div>
 
-            {/* Right: Refresh */}
             <div>
               <Button
                 variant="outline"
@@ -158,7 +155,7 @@ const Dashboard = () => {
                   e.preventDefault();
                   fetchMessages();
                 }}
-                className="border border-white bg-transparent  text-white hover:bg-white hover:text-black transition font-mono hover:cursor-pointer"
+                className="border border-white bg-transparent text-white hover:bg-white hover:text-black transition font-mono hover:cursor-pointer"
               >
                 {loading ? (
                   <Loader className="h-4 w-4 animate-spin" />
@@ -168,11 +165,10 @@ const Dashboard = () => {
               </Button>
             </div>
           </div>
-
         </div>
 
-
-        <div className='relative'>
+        {/* Fixed Carousel Section */}
+        <div className="relative">
           <Carousel
             className="w-full"
             plugins={[Autoplay({ delay: 2000 })]}
@@ -194,7 +190,7 @@ const Dashboard = () => {
                   Array.from({ length: 5 }).map((_, index) => (
                     <CarouselItem
                       key={index}
-                      className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4  "
+                      className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                     >
                       <div className="p-2">
                         <Card className="bg-black border border-white text-white min-h-[200px] flex items-center justify-center">
@@ -208,8 +204,10 @@ const Dashboard = () => {
                 )
               }
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+
+            {/* 👇 Fixed Carousel Arrows */}
+            <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 bg-white text-black hover:bg-gray-200 shadow-lg" />
+            <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 bg-white text-black hover:bg-gray-200 shadow-lg" />
           </Carousel>
         </div>
       </div>
