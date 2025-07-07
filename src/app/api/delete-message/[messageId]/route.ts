@@ -13,7 +13,7 @@ export async function POST(
 ): Promise<NextResponse> {
     await connectDB();
 
-    const { messageId } = params;
+    const { messageId } = await params;
 
     try {
         const result = await User.updateOne(
